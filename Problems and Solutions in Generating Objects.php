@@ -12,7 +12,7 @@ class Minion extends Employee
 {
     public function fire(): void
     {
-        print "$this->name : I'll clean my desk\n";
+        print "$this->name : I'll clean my desk"."<br>";
 
     }
 }
@@ -20,9 +20,9 @@ class Minion extends Employee
 class NastyBoss
 {
     private array $employees = [];
-    public function addEmployee(string $employeeName) : void
+    public function addEmployee(Employee $employee) : void
     {
-        $this->employees[] = new Minion($employeeName);
+        $this->employees[] = $employee;
     }
     public function projectFails() : void
     {
@@ -34,8 +34,18 @@ class NastyBoss
     }
 
 }
+
+class CluedUp extends Employee
+{
+    public function fire(): void
+    {
+        print "$this->name : I'll call my lawyer!!"."<br>";
+    }
+}
 $boss = new NastyBoss();
-$boss->addEmployee("Ann");
-$boss->addEmployee("Bill");
-$boss->addEmployee("Tony");
+$boss->addEmployee(new Minion("Ann"));
+$boss->addEmployee(new Minion("Tony"));
+$boss->addEmployee(new CluedUp("Bill"));
+$boss->projectFails();
+$boss->projectFails();
 $boss->projectFails();
