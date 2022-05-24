@@ -7,6 +7,7 @@ class ShopProduct
     public  $producerMainName;
     public  $producerFirstName;
     public  $price;
+    public $discount = 0;
 
     public function __construct(
         $title,
@@ -27,6 +28,22 @@ class ShopProduct
     public function getSummaryLine() : string
     {
         return "$this->title ( $this->producerMainName, $this->producerFirstName )";
+    }
+
+    /**
+     * @param int $discount
+     */
+    public function setDiscount(int $discount): void
+    {
+        $this->discount = $discount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrice(): int|float
+    {
+        return $this->price-$this->discount;
     }
 }
 class BookProduct extends ShopProduct
@@ -80,14 +97,32 @@ class CDProduct extends ShopProduct
 
 class ShopProductWriter
 {
-    public function Write(ShopProduct $shopProduct){
-        $str = $shopProduct->title.": "
-            .$shopProduct->getProducer()
-            ."( ".$shopProduct->price.")\n";
+    private $products = [];
+
+    public function addProduct(ShopProduct $shopProduct): void
+    {
+        $this->products[] = $shopProduct;
+    }
+    public function write(): void
+    {
+        $str = "";
+        foreach ($this->products as $shopProduct) {
+            $str .= "{$shopProduct->title}: ";
+            $str .= $shopProduct->getProducer();
+            $str .= " ({$shopProduct->getPrice()})<br> ";
+        }
         print $str;
+
     }
 }
-$book1 = new BookProduct(1000, "My Antonia", "Willa", 5.99, 500);
-print $book1->getSummaryLine()."<br/>";
-$CD = new CDProduct("CDmusic", "plagiator", "plagiatorovich", 8.0, 990);
-print $CD->getSummaryLine();
+$book1 = new BookProduct(1111, "My Antonia", "Willa", 5.99, 500);
+$CD = new CDProduct("2222", "plagiator", "plagiatorovich", 8.0, 990);
+$CD2 = new CDProduct("3333", "pla", "plagiato", 8.0, 990);
+$write = new ShopProductWriter;
+$write->addProduct($book1);;
+$write->addProduct($CD);
+$write->addProduct($CD2);
+$write->write();
+
+
+
