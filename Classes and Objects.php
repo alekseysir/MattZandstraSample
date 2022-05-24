@@ -3,59 +3,78 @@
 
 class ShopProduct
 {
-    public  $title;
-    public  $producerMainName;
-    public  $producerFirstName;
-    public  $price;
-    public $discount = 0;
+    public int|float $discount = 0;
 
     public function __construct(
-        $title,
-        $producerMainName,
-        $producerFirstName,
-        $price
+        private string $title,
+        private string $producerFirstName,
+        private string $producerMainName,
+        protected int|float $price
     ){
-        $this->title = $title;
-        $this->producerMainName = $producerMainName;
-        $this->producerFirstName = $producerFirstName;
-        $this->price = $price;
     }
 
+    /**
+     * @return string
+     */
+    public function getProducerFirstName(): string
+    {
+        return $this->producerFirstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getProducerMainName(): string
+    {
+        return $this->producerMainName;
+    }
+    public function setDiscount(int|float $num): void
+    {
+        $this->discount = $num;
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getDiscount(): float|int
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function getPrice(): int|float
+    {
+        return $this->price-$this->discount;
+    }
     public function getProducer() : string
     {
         return $this->producerFirstName." ".$this->producerMainName;
     }
     public function getSummaryLine() : string
     {
-        return "$this->title ( $this->producerMainName, $this->producerFirstName )";
+        $base = "{$this->title} ( {$this->producerMainName}, ";
+        $base .= "{$this->producerFirstName} )";
+        return $base;
     }
 
-    /**
-     * @param int $discount
-     */
-    public function setDiscount(int $discount): void
-    {
-        $this->discount = $discount;
-    }
 
-    /**
-     * @return mixed
-     */
-    public function getPrice(): int|float
-    {
-        return $this->price-$this->discount;
-    }
 }
 class BookProduct extends ShopProduct
 {
-    public $numPages;
 
     public function __construct(
         string $title,
         string $firstName,
         string $mainName,
-        float $price,
-        int $numPages
+        int|float $price,
+        private int $numPages
     )
     {
         parent:: __construct(
@@ -64,7 +83,6 @@ class BookProduct extends ShopProduct
             $mainName,
             $price
         );
-        $this->numPages = $numPages;
     }
 
     public function getNumberOfPages(): int
@@ -75,14 +93,25 @@ class BookProduct extends ShopProduct
     {
         return parent::getSummaryLine().": Page count - $this->numPages";
     }
+    public function getPrice():int|float{
+        return $this->price;
+    }
 }
 class CDProduct extends ShopProduct
 {
-    public $playLength;
-    public function __construct($title, $producerMainName, $producerFirstName, $price, $playLength)
+    public function __construct(
+        string $title,
+        string $firstName,
+        string $mainName,
+        int|float $price,
+        private int $playLength
+        )
     {
-        parent::__construct($title, $producerMainName, $producerFirstName, $price);
-        $this->playLength = $playLength;
+        parent::__construct($title,
+            $firstName,
+            $mainName,
+            $price
+        );
     }
 
     public function getPlayLength(): int
@@ -91,7 +120,7 @@ class CDProduct extends ShopProduct
     }
     public function getSummaryLine(): string
     {
-        return parent::getSummaryLine().": Play length - $this->playLength";
+        return parent::getSummaryLine().": Playing time - {$this->playLength}";
     }
 }
 
@@ -107,7 +136,7 @@ class ShopProductWriter
     {
         $str = "";
         foreach ($this->products as $shopProduct) {
-            $str .= "{$shopProduct->title}: ";
+            $str .= "{$shopProduct->getTitle()}: ";
             $str .= $shopProduct->getProducer();
             $str .= " ({$shopProduct->getPrice()})<br> ";
         }
