@@ -6,11 +6,18 @@ class Conf
 
     public function __construct(private string $file)
     {
+        if (!file_exists($this->file)){
+            throw new \Exception("File {'$file'} is not exixts");
+        }
         $this->xml = simplexml_load_file($this->file);
     }
 
     public function write(): void
     {
+        if (!is_writable($this->file)){
+            throw new \Exception("file $this->file is not writeable");
+        }
+        print "File $this->file is apparently writeable<br>";
         file_put_contents($this->file, $this->xml->asXML());
     }
 
@@ -34,4 +41,14 @@ class Conf
         $this->xml->addChild('item', $value)->addAttribute('name', $key);
 
     }
+}
+
+try {
+    $conf = new Conf("conf01.xml");
+    print "User: ". $conf->get("user")."<br>";
+    print "Host: ". $conf->get("host")."<br>";
+    $conf->set("pass", "newpass");
+    $conf->write();
+} catch (\Exception $e){
+    print $e->getMessage();
 }
